@@ -18,3 +18,5 @@ Visit `https://discordapp.com/oauth2/authorize?client_id={MY_CLIENT_ID}&scope=bo
 
 + !teams [team1] [team2]...
   Ask Discordia to assign everyone currently online to teams, randomly
++ !gif [optional search terms]
+  Pull a (hopefully relevant) gif from Giphy
