@@ -1,0 +1,16 @@
+{
+  "announceEnabled": false,
+  "announceChannel": "my-channel-id",
+  "clientToken": "",
+  "greetings": [
+    "Welcome %s!",
+    "Hang in there %s!",
+    "Hiya %s!",
+    "Hello %s, how's it hanging?",
+    "Hi %s, I want to hug you like big, fuzzy Siberian bear!",
+    "HALLO %s",
+    "Bonjour %s...",
+    "Namaste %s",
+    "Konichiwa %s, yoi ichi nichi wo"
+  ]
+}
