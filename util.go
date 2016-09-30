@@ -5,6 +5,7 @@ import (
   "math/rand"
 
   "github.com/bwmarrin/discordgo"
+  "github.com/golang/glog"
 )
 
 func getOnlineUsers(s *discordgo.Session) []string{
@@ -24,14 +25,17 @@ func getUsername(u *discordgo.User, s *discordgo.Session) string {
   if len(u.Username) > 0 {
     return u.Username
   }
-  user,_ := s.User(u.ID)
+  user,err := s.User(u.ID)
+  if err != nil {
+    glog.Error("Failed to resolve username", err)
+  }
   return user.Username
 }
 
 func sendMsg(s *discordgo.Session, cID string, content string) {
   _, err := s.ChannelMessageSend(cID, content)
   if err != nil {
-    fmt.Println("Failed to send message", err)
+    glog.Error("Failed to send message", err)
   }
   return
 }

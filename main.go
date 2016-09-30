@@ -8,6 +8,7 @@ import (
   "encoding/json"
 
   "github.com/bwmarrin/discordgo"
+  "github.com/golang/glog"
 )
 
 // Variables used for command line parameters
@@ -28,13 +29,13 @@ func init() {
 
   configFile, err := os.Open("config.json")
   if err != nil {
-    fmt.Println("Failed to open config", err)
+    glog.Error("Failed to load config", err)
     return
   }
 
   jsonParser := json.NewDecoder(configFile)
   if err = jsonParser.Decode(&config); err != nil {
-    fmt.Println("Failed to parse config", err)
+    glog.Error("Failed to parse config", err)
     return
   }
 
@@ -47,21 +48,28 @@ func init() {
 func main() {
   dg, err := discordgo.New("Bot " + token);
   if err != nil {
-    fmt.Println("Failed to log into Discord", err)
+    glog.Error("Failed to log into Discord", err)
     return
   }
 
   dg.AddHandler(getMsg)
   if config.AnnounceEnabled {
     dg.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {
-      if m.Presence.Status == "online" {
-        sendMsg(dg, config.AnnounceChannel, greet(getUsername(m.Presence.User, s)) )
+      //fmt.Printf("Status Update %+v \n", s.State.Guilds[0].Presences[m.Presence.User.ID])
+      presences := s.State.Guilds[0].Presences;
+      for _,v := range presences {
+        if v.User.ID == m.Presence.User.ID {
+          fmt.Printf("%+v %+v \n", v, m)
+          if v.Status != "online" && m.Presence.Status == "online" {
+            sendMsg(dg, config.AnnounceChannel, greet(getUsername(m.Presence.User, s)) )
+          }
+        }
       }
     })
   }
   err = dg.Open()
   if err != nil {
-    fmt.Println("Failed to connect to Discord", err)
+    glog.Error("Failed to connect to Discord", err)
     return
   }
   fmt.Println("Discordia is listening...")
@@ -77,7 +85,7 @@ func getMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 
     wasSuccessful := runCmd(cmd, ops, s, m)
     if !wasSuccessful {
-      fmt.Println("Failed to run command " + cmd)
+      glog.Warning("Failed to run command " + cmd)
     }
   }
 }
