@@ -84,7 +84,8 @@ func main() {
 }
 
 func getMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if strings.HasPrefix(m.Content, "!") {
+  //fmt.Printf("Message %+v\n", m.ContentWithMentionsReplaced())
+	if strings.HasPrefix(m.Content, "!") || strings.HasPrefix(m.ContentWithMentionsReplaced(), "@"+s.State.User.Username){
     parts := strings.Fields(m.Content)
     cmd := parts[0]
     ops :=  parts[1:]

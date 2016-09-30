@@ -22,7 +22,8 @@ func registerCmd(prefix string, handl cmdHandl) {
 func runCmd(cmd string, ops []string, s *discordgo.Session, m *discordgo.MessageCreate) bool {
   hndl, exists := cmds[cmd]
   if exists {
-    return hndl(ops, s, m)
+    go hndl(ops, s, m)
+    return true
   } else {
     return false
   }
