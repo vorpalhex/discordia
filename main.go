@@ -21,9 +21,14 @@ var config struct {
   AnnounceChannel string `json:"announceChannel"`
   ClientToken string `json:"clientToken"`
   Greetings []string `json:"greetings"`
+  GiphyKey string `json:"giphyKey"`
 }
 
+var userPresence map[string]string
+
 func init() {
+  userPresence = make(map[string]string)
+
 	flag.StringVar(&token, "t", "", "Account Token")
 	flag.Parse()
 
@@ -55,16 +60,17 @@ func main() {
   dg.AddHandler(getMsg)
   if config.AnnounceEnabled {
     dg.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {
-      //fmt.Printf("Status Update %+v \n", s.State.Guilds[0].Presences[m.Presence.User.ID])
-      presences := s.State.Guilds[0].Presences;
-      for _,v := range presences {
-        if v.User.ID == m.Presence.User.ID {
-          fmt.Printf("%+v %+v \n", v, m)
-          if v.Status != "online" && m.Presence.Status == "online" {
-            sendMsg(dg, config.AnnounceChannel, greet(getUsername(m.Presence.User, s)) )
-          }
+      presence,exists := userPresence[m.Presence.User.ID]
+
+      if !exists && m.Presence.Status == "online"{
+        sendMsg(dg, config.AnnounceChannel, greet(getUsername(m.Presence.User, s)) )
+      } else {
+        if presence != "online" && m.Presence.Status == "online" {
+          sendMsg(dg, config.AnnounceChannel, greet(getUsername(m.Presence.User, s)) )
         }
       }
+
+      userPresence[m.Presence.User.ID] = m.Presence.Status
     })
   }
   err = dg.Open()

@@ -25,12 +25,12 @@ func cmd_gif(search []string, s *discordgo.Session, m *discordgo.MessageCreate) 
     }
     gif = gifs[rand.Intn(len(gifs))].URL
   }else{
-    gifs, _, err := gophyClient.SearchGifs(strings.Join(search, " "), "", 1, 0)
+    gifs, _, err := gophyClient.SearchGifs(strings.Join(search, " "), "", 50, 0)
     if err != nil {
       glog.Error("Failed to get gif via search", err)
       return false
     }
-    gif = gifs[0].URL
+    gif = gifs[rand.Intn(len(gifs))].URL
   }
 
   sendMsg(s, m.ChannelID, gif)
@@ -39,6 +39,9 @@ func cmd_gif(search []string, s *discordgo.Session, m *discordgo.MessageCreate) 
 
 func init(){
   gophyOpts = &gophy.ClientOptions{}
+  if len(config.GiphyKey) > 0 {
+    gophyOpts.ApiKey = config.GiphyKey
+  }
   gophyClient = gophy.NewClient(gophyOpts)
 
   registerCmd("!gif", cmd_gif)
